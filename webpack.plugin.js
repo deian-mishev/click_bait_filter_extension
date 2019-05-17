@@ -15,7 +15,6 @@ module.exports = {
     "content-script":
       "./click_bait_filter_extension/plugin-src/my-content-script.js",
     background: "./click_bait_filter_extension/plugin-src/my-background.js",
-
     // This is just the popup script, it shouldn't trigger the plugin reload when is changed
     popup: "./click_bait_filter_extension/plugin-src/popup.js"
   },

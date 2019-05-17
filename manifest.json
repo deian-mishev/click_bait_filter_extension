@@ -2,10 +2,9 @@
   "manifest_version": 2,
   "name": "Click Bait Filter Extension",
   "version": "0.1",
+  "permissions": ["storage", "history", "tabs"],
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "icons": {
     "16": "webpack.16.png",
@@ -13,19 +12,18 @@
     "128": "webpack.128.png"
   },
   "browser_action": {
-    "default_popup": "popup.html"
+    "default_icon": {
+      "16": "webpack.16.png",
+      "24": "webpack.48.png",
+      "32": "webpack.128.png"
+    },
+    "default_title": "Google Mail"
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content-script.js"
-      ],
-      "css": [
-        "style.css"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "css": ["style.css"]
     }
   ]
 }

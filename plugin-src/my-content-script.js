@@ -2,35 +2,23 @@ import depSample from "./dependency-sample";
 
 console.log(depSample());
 
-document.onmousemove = function(e) {
-  console.log("Test Change...");
-};
-
-window.onload = () => {
-  const xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      // Typical action to be performed when the document is ready:
-      console.log(xhttp.responseText);
-    }
-  };
-  xhttp.open("GET", "http://localhost:3001/pageSegmentation", true);
-  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send(window.location.origin);
-};
-
 document.onclick = function(e) {
-  const x = e.pageX;
-  const y = e.pageY;
-  const xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      // Typical action to be performed when the document is ready:
-      console.log(xhttp.responseText);
+  if (e.target.nodeName === "A") {
+    var href = e.target.getAttribute("href"),
+      selfhost = window.location.hostname;
+    if (href.indexOf(selfhost) !== -1) {
+      e.stopPropagation();
+      e.preventDefault();
+      chrome.runtime.sendMessage({
+        link: href
+      });
     }
-  };
-  xhttp.open("POST", "http://localhost:3001/position", true);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  const tempBuild = { x, y };
-  xhttp.send(JSON.stringify(tempBuild));
+  }
 };
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action && request.action === "trimPage") {
+    console.info("To filter:", request.urls);
+    sendResponse("wasFine");
+  }
+});
