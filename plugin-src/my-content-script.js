@@ -1,7 +1,3 @@
-import depSample from "./dependency-sample";
-
-console.log(depSample());
-
 document.onclick = function(e) {
   if (e.target.nodeName === "A") {
     var href = e.target.getAttribute("href"),
@@ -10,15 +6,16 @@ document.onclick = function(e) {
       e.stopPropagation();
       e.preventDefault();
       chrome.runtime.sendMessage({
-        link: href
+        link: href,
+        action: "gkXhYFWNhLV7ggym"
       });
     }
   }
 };
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action && request.action === "trimPage") {
-    console.info("To filter:", request.urls);
-    sendResponse("wasFine");
+  if (request.action && request.action === "gkXhYFWNhLV7ggym") {
+    // document.body.innerHTML = "Was Fine To filter: " +  request.url;
+    sendResponse("Was Fine To filter: " +  request.url);
   }
 });

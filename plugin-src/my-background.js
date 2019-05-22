@@ -1,26 +1,18 @@
 import { guid, getCookies, extractHostname } from "./utils";
 
+// REQUESTING SEGMENTATION FROM BACKEND
 let lastRequested;
-const onFocusChange = function() {
-  chrome.tabs.getSelected(null, function(tab) {
+const filterScenes = (tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url.indexOf('http') !== -1) {
     const tempRequested = extractHostname(tab.url);
     if (lastRequested === tempRequested) return;
     const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
-        // Typical action to be performed when the document is ready:
-        chrome.tabs.query({ active: true, currentWindow: true }, function(
-          tabs
-        ) {
-          if (tabs.length > 0) {
-            chrome.tabs.sendMessage(
-              tabs[0].id,
-              { action: "trimPage", urls: xhttp.responseText },
-              function(response) {
-                console.log(response);
-              }
-            );
-          }
+        chrome.tabs.sendMessage(tabId, {
+          action: 'gkXhYFWNhLV7ggym', url: xhttp.responseText
+        }, function (response) {
+          console.log(response);
         });
       }
     };
@@ -33,22 +25,22 @@ const onFocusChange = function() {
     lastRequested = tempRequested;
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send();
-  });
+  }
 };
 
-chrome.windows.onFocusChanged.addListener(onFocusChange);
+chrome.tabs.onActiveChanged.addListener(filterScenes);
+chrome.tabs.onUpdated.addListener(filterScenes);
 
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
-  if (msg.type !== "SIGN_CONNECT") {
+//ADDING SEGMENTATION TO THE USER PROFILE
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type !== "SIGN_CONNECT" && msg.action === 'gkXhYFWNhLV7ggym') {
     const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         sendResponse();
-        console.log(xhttp.responseText);
       }
     };
-
-    console.log(msg.link);
+    msg.action = guid();
     xhttp.open("POST", "http://localhost:3001/link", true);
     xhttp.withCredentials = true;
     xhttp.setRequestHeader("Content-type", "application/json");
@@ -56,10 +48,69 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
   }
 });
 
-chrome.runtime.onConnect.addListener(function() {
-  console.log("I started up!");
-  chrome.storage.sync.get(["uuid"], function(result) {});
-});
+
+// chrome.tabs.onCreated.addListener(() => {
+//   console.log("onCreated");
+// });
+
+// chrome.tabs.onUpdated.addListener(() => {
+//   console.log("onUpdated");
+// });
+
+// chrome.tabs.onMoved.addListener(() => {
+//   console.log("onMoved");
+// });
+
+// chrome.tabs.onSelectionChanged.addListener(() => {
+//   console.log("onSelectionChanged");
+// });
+
+// chrome.tabs.onActiveChanged.addListener(() => {
+//   console.log("onActiveChanged");
+// });
+
+// chrome.tabs.onActivated.addListener(() => {
+//   console.log("onActivated");
+// });
+
+// chrome.tabs.onHighlightChanged.addListener(() => {
+//   console.log("onHighlightChanged");
+// });
+
+// chrome.tabs.onDetached.addListener(() => {
+//   console.log("onDetached");
+// });
+
+// chrome.tabs.onAttached.addListener(() => {
+//   console.log("onAttached");
+// });
+
+// chrome.tabs.onRemoved.addListener(() => {
+//   console.log("onRemoved");
+// });
+
+// chrome.tabs.onReplaced.addListener(() => {
+//   console.log("onReplaced");
+// });
+
+// chrome.windows.onCreated.addListener(() => {
+//   console.log("windows_onCreated");
+// });
+
+// chrome.windows.onRemoved.addListener(() => {
+//   console.log("windows_onRemoved");
+// });
+
+// chrome.windows.onFocusChanged.addListener(() => {
+//   console.log("windows_onFocusChanged");
+// });
+
+// chrome.windows.onFocusChanged.addListener(filterScenes);
+
+// chrome.runtime.onConnect.addListener(function () {
+//   console.log("I started up!");
+//   chrome.storage.sync.get(["uuid"], function (result) { });
+// });
 
 // chrome.storage.sync.get(["key"], function(result) {
 //   console.log("Value currently is " + result.key);
