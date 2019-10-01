@@ -2,9 +2,15 @@
   "manifest_version": 2,
   "name": "Click Bait Filter Extension",
   "version": "0.1",
-  "permissions": ["storage", "history", "tabs"],
+  "permissions": [
+    "storage",
+    "history",
+    "tabs"
+  ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "icons": {
     "16": "webpack.16.png",
@@ -17,13 +23,21 @@
       "24": "webpack.48.png",
       "32": "webpack.128.png"
     },
-    "default_title": "Google Mail"
+    "default_popup": "popup.html",
+    "default_title": "Chrome Clickbait Filter"
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["content-script.js"],
-      "css": ["style.css"]
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content-script.js"
+      ],
+      "css": [
+        "style.css"
+      ]
     }
   ]
 }

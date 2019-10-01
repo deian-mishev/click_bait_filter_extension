@@ -4,9 +4,17 @@
  */
 import "./style.css";
 
-const element = document.createElement("span");
-element.innerText = "You clicked me! :)";
+const myRange = document.getElementById("myRange");
 
-document
-  .getElementById("button")
-  .addEventListener("click", () => document.body.appendChild(element));
+chrome.storage.sync.get(["myRangeValue"], function (result) {
+    myRange.value = result.myRangeValue;
+});
+
+const sendMessage = (e) => (chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.storage.sync.set({ myRangeValue: e.target.value });
+    chrome.tabs.sendMessage(tabs[0].id,
+        { type: "rangeChange", value: e.target.value, action: 'gkXhYFWNhLV7ggym' }
+        , null);
+}));
+
+myRange.addEventListener("change", sendMessage);

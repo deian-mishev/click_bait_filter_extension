@@ -1,30 +1,49 @@
 import { guid, getCookies, extractHostname } from "./utils";
 
 // REQUESTING SEGMENTATION FROM BACKEND
-let lastRequested;
 const filterScenes = (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url.indexOf('http') !== -1) {
+  // Case page is loading
+  const xhttp = new XMLHttpRequest();
+  if (changeInfo.status === 'loading' && tab.url.indexOf('http') === 0) {
     const tempRequested = extractHostname(tab.url);
-    if (lastRequested === tempRequested) return;
-    const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         chrome.tabs.sendMessage(tabId, {
-          action: 'gkXhYFWNhLV7ggym', url: xhttp.responseText
-        }, function (response) {
-          console.log(response);
+          action: 'gkXhYFWNhLV7ggym', links: JSON.parse(xhttp.response), type: 'pageSegmentation'
         });
       }
     };
     xhttp.open(
-      "GET",
-      "http://localhost:3001/pageSegmentation/" + tempRequested,
+      "POST",
+      "http://localhost:3001/pageSegmentation",
       true
     );
     xhttp.withCredentials = true;
-    lastRequested = tempRequested;
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send();
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify({
+      tabId,
+      page: tempRequested,
+      action: guid()
+    }));
+  } else if (!changeInfo.favIconUrl && changeInfo.status !== 'complete') {
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        chrome.tabs.sendMessage(tabId, {
+          action: 'gkXhYFWNhLV7ggym', links: JSON.parse(xhttp.response), type: 'pageSegmentation'
+        });
+      }
+    };
+    xhttp.open(
+      "POST",
+      "http://localhost:3001/pageSegmentation",
+      true
+    );
+    xhttp.withCredentials = true;
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify({
+      tabId,
+      action: guid()
+    }));
   }
 };
 
@@ -48,76 +67,94 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
+// chrome.windows.onFocusChanged.addListener(filterScenes);
 
-// chrome.tabs.onCreated.addListener(() => {
+// chrome.tabs.onCreated.addListener((x, y, z, m) => {
 //   console.log("onCreated");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onUpdated.addListener(() => {
+// chrome.tabs.onUpdated.addListener((x, y, z, m) => {
 //   console.log("onUpdated");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onMoved.addListener(() => {
+// chrome.tabs.onMoved.addListener((x, y, z, m) => {
 //   console.log("onMoved");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onSelectionChanged.addListener(() => {
+// chrome.tabs.onSelectionChanged.addListener((x, y, z, m) => {
 //   console.log("onSelectionChanged");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onActiveChanged.addListener(() => {
+// chrome.tabs.onActiveChanged.addListener((x, y, z, m) => {
 //   console.log("onActiveChanged");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onActivated.addListener(() => {
+// chrome.tabs.onActivated.addListener((x, y, z, m) => {
 //   console.log("onActivated");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onHighlightChanged.addListener(() => {
+// chrome.tabs.onHighlightChanged.addListener((x, y, z, m) => {
 //   console.log("onHighlightChanged");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onDetached.addListener(() => {
+// chrome.tabs.onDetached.addListener((x, y, z, m) => {
 //   console.log("onDetached");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onAttached.addListener(() => {
+// chrome.tabs.onAttached.addListener((x, y, z, m) => {
 //   console.log("onAttached");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onRemoved.addListener(() => {
+// chrome.tabs.onRemoved.addListener((x, y, z, m) => {
 //   console.log("onRemoved");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.tabs.onReplaced.addListener(() => {
+// chrome.tabs.onReplaced.addListener((x, y, z, m) => {
 //   console.log("onReplaced");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
 // chrome.windows.onCreated.addListener(() => {
 //   console.log("windows_onCreated");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.windows.onRemoved.addListener(() => {
+// chrome.windows.onRemoved.addListener((x, y, z, m) => {
 //   console.log("windows_onRemoved");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.windows.onFocusChanged.addListener(() => {
+// chrome.windows.onFocusChanged.addListener((x, y, z, m) => {
 //   console.log("windows_onFocusChanged");
+//   console.log(x, y, z, m);
+//   console.log("------------------------");
 // });
 
-// chrome.windows.onFocusChanged.addListener(filterScenes);
 
 // chrome.runtime.onConnect.addListener(function () {
 //   console.log("I started up!");
 //   chrome.storage.sync.get(["uuid"], function (result) { });
-// });
-
-// chrome.storage.sync.get(["key"], function(result) {
-//   console.log("Value currently is " + result.key);
-// });
-
-// chrome.browserAction.onClicked.addListener(function() {});
-
-// chrome.storage.sync.set({ key: "asa" }, function(a) {
-//   console.log("Value is set to asa");
 // });
