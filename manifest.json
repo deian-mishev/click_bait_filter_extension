@@ -3,6 +3,9 @@
   "name": "Click Bait Filter Extension",
   "version": "0.1",
   "permissions": [
+    "http://*/*",
+    "https://*/*",
+    "webRequest",
     "storage",
     "history",
     "tabs"
@@ -26,6 +29,9 @@
     "default_popup": "popup.html",
     "default_title": "Chrome Clickbait Filter"
   },
+  "web_accessible_resources": [
+    "blocked.png"
+  ],
   "content_scripts": [
     {
       "matches": [

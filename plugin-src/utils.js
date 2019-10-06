@@ -1,11 +1,24 @@
-export const guid = () => {
+export const getToken = () => {
+  const guid = getGuid()
+  const token = localStorage.getItem(guid);
+  return token || guid;
+};
+
+export const setToken = (a) => {
+  const b = a.getResponseHeader('Authorization');
+  if (b && b.indexOf('Bearer') === 0) {
+    const token = b.replace('Bearer ', '');
+    localStorage.setItem(getGuid(), token)
+  }
+};
+
+export const getGuid = () => {
   var nav = window.navigator;
   var guid = nav.mimeTypes.length;
   guid += nav.userAgent.replace(/\D+/g, "");
   guid += nav.plugins.length;
-
   return guid;
-};
+}
 
 export const getCookies = function () {
   var pairs = document.cookie.split(";");
