@@ -3,14 +3,9 @@ import { PORT, API, URL } from './constants';
 
 const SERVER_ADDRESS = `${URL}:${PORT}/${API}`;
 const GUID = getGuid();
-// REQUESTING SEGMENTATION FROM BACKEND
-// let lastDomain;
-const filterScenes = (tabId, changeInfo, tab) => {
-  // if (tab && tab.url) {
-  //   if (tab.url === lastDomain) { return; }
-  //   lastDomain = tab.url;
-  // }
 
+// REQUESTING SEGMENTATION FROM BACKEND
+const filterScenes = (tabId, changeInfo, tab) => {
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "POST",
@@ -69,21 +64,3 @@ chrome.webRequest.onBeforeRequest.addListener(callback, {
 
 chrome.tabs.onActiveChanged.addListener(filterScenes);
 chrome.tabs.onUpdated.addListener(filterScenes);
-
-// //ADDING SEGMENTATION TO THE USER PROFILE
-// chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-//   if (msg.type !== "SIGN_CONNECT") {
-//     const xhttp = new XMLHttpRequest();
-//     xhttp.onreadystatechange = function () {
-//       if (this.readyState == 4 && this.status == 200) {
-//         sendResponse();
-//       }
-//     };
-
-//     xhttp.open("POST", `${SERVER_ADDRESS}/click`, true);
-//     xhttp.withCredentials = true;
-//     xhttp.setRequestHeader("Content-type", "application/json");
-//     xhttp.setRequestHeader('Authorization', 'Bearer ' + getToken());
-//     xhttp.send(JSON.stringify(msg));
-//   }
-// });

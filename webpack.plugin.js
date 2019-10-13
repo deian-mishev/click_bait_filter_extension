@@ -33,6 +33,7 @@ module.exports = {
     new MiniCssExtractPlugin({ filename: "style.css" }),
     new CopyWebpackPlugin([
       { from: "./click_bait_filter_extension/plugin-src/popup.html" },
+      { from: "./click_bait_filter_extension/plugin-src/nouislider" },
       { from: "./click_bait_filter_extension/plugin-src/blocked.png" },
       { from: "./click_bait_filter_extension/manifest.json" },
       { from: "./click_bait_filter_extension/icons" }
