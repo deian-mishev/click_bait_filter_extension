@@ -43,10 +43,10 @@ export const extractHostname = url => {
   return hostname;
 };
 
-const getCoverElement = () => {
+const getCoverElement = (high) => {
   const cover = document.createElement("DIV");
-  const blockedUrl = chrome.runtime.getURL('blocked.png');
-
+  let blockedUrl
+    = chrome.runtime.getURL(high ? 'blocked_green.png' : 'blocked_red.png');
   cover.style.backgroundImage = `url(${blockedUrl})`;
   cover.style.backgroundRepeat = 'no-repeat';
   cover.style.backgroundPosition = 'center center';
@@ -61,9 +61,9 @@ const getCoverElement = () => {
   return cover;
 }
 
-const addcover = (element) => {
+const addcover = (element, above) => {
   element.childNodes.length == 0 && (element.style.position = 'relative');
-  const cover = getCoverElement();
+  const cover = getCoverElement(above);
   element.appendChild(cover);
 }
 
@@ -110,38 +110,42 @@ const removeFilter = (el) => {
   el.classList.remove('someCrasyClass');
 }
 
-export const showhideDom = (rangeValue, eHide, eShow, groups, linksToFilter) => {
+export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFilter) => {
   clearAllCover(eHide, eShow);
 
-  if (rangeValue !== 0) {
+  if (valueLow !== 0) {
     for (let index = 0; index < eHide.length; index++) {
 
       let element = eHide[index];
 
       element.addEventListener('click', stopIt, false);
-      const diff = rangeValue / 100;
+      const diff = valueLow / 100;
       diff = diff !== 0 ? diff : 0.1;
       applyFilter(element, diff);
       addcover(element);
     }
-
-    for (let j = 0; j < eShow.length; j++) {
-      const element = eShow[j];
-      const group = groups[linksToFilter[element.href]];
-      const meta = group[GUID];
-
-      if (rangeValue >= meta.upperRange) {
-
-        const diff = Math.abs(meta.upperRange - rangeValue) / 90;
-        let roundedDecimal = parseFloat(diff.toFixed(1));
-        roundedDecimal = roundedDecimal !== 0.0 ? roundedDecimal : 0.1;
-        element.addEventListener('click', stopIt, false);
-        applyFilter(element, roundedDecimal);
-        addcover(element);
-      }
-    }
   }
-  else {
-    clearAllCover(eHide, eShow);
+
+  for (let j = 0; j < eShow.length; j++) {
+    const element = eShow[j];
+    const group = groups[linksToFilter[element.href]];
+    const meta = group[GUID];
+
+    if (valueLow >= meta.upperRange) {
+
+      const diff = Math.abs(meta.upperRange - valueLow) / 90;
+      let roundedDecimal = parseFloat(diff.toFixed(1));
+      roundedDecimal = roundedDecimal !== 0.0 ? roundedDecimal : 0.1;
+      element.addEventListener('click', stopIt, false);
+      applyFilter(element, roundedDecimal);
+      addcover(element);
+    } else if (valueHigh <= meta.lowerRange) {
+      const diff = Math.abs(valueHigh - meta.lowerRange) / 90;
+      let roundedDecimal = parseFloat(diff.toFixed(1));
+      roundedDecimal = roundedDecimal !== 0.0 ? roundedDecimal : 0.1;
+      element.addEventListener('click', stopIt, false);
+      applyFilter(element, roundedDecimal);
+      addcover(element, true);
+    }
   }
 }

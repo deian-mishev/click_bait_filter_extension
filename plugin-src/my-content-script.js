@@ -1,6 +1,7 @@
 import { getGuid, showhideDom, addStyleString } from "./utils";
 
-let rangeValue;
+let valueLow;
+let valueHigh;
 let linksToFilter;
 let eHide = [];
 let eShow = [];
@@ -8,16 +9,18 @@ const groups = {}
 
 const GUID = getGuid();
 
-chrome.storage.sync.get(["myRangeValue"], function (result) {
-  rangeValue = result.myRangeValue ? parseInt(result.myRangeValue) : 50;
+chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh"], function (result) {
+  valueLow = result.myRangeValueLow ? parseInt(result.myRangeValueLow) : 0;
+  valueHigh = result.myRangeValueHigh ? parseInt(result.myRangeValueHigh) : 100;
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
     case 'rangeChange':
       // Filter according to range change
-      rangeValue = parseInt(request.value);
-      showhideDom(rangeValue, eHide, eShow, groups, linksToFilter);
+      valueLow = parseInt(request.valueLow);
+      valueHigh = parseInt(request.valueHigh);
+      showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
       sendResponse(request);
       break;
     case 'pageSegmentation':
@@ -64,7 +67,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
 
       sendResponse(linksToFilter);
-      showhideDom(rangeValue, eHide, eShow, groups, linksToFilter);
+      showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
       break;
     default:
   }

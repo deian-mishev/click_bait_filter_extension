@@ -30,7 +30,8 @@
     "default_title": "Chrome Clickbait Filter"
   },
   "web_accessible_resources": [
-    "blocked.png"
+    "blocked_green.png",
+    "blocked_red.png"
   ],
   "content_scripts": [
     {
