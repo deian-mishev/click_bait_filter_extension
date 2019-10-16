@@ -1,4 +1,4 @@
-import { getGuid, showhideDom, addStyleString } from "./utils";
+import { showhideDom, addStyleString } from "./utils";
 
 let valueLow;
 let valueHigh;
@@ -7,11 +7,15 @@ let eHide = [];
 let eShow = [];
 const groups = {}
 
-const GUID = getGuid();
-
 chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh"], function (result) {
-  valueLow = result.myRangeValueLow ? parseInt(result.myRangeValueLow) : 0;
-  valueHigh = result.myRangeValueHigh ? parseInt(result.myRangeValueHigh) : 100;
+  if (result.myRangeValueHigh === undefined || result.myRangeValueLow === undefined) {
+    valueLow = 0;
+    valueHigh = 100;
+    chrome.storage.sync.set({ myRangeValueLow: valueLow, myRangeValueHigh: valueHigh });
+  } else {
+    valueLow = parseInt(result.myRangeValueLow);
+    valueHigh = parseInt(result.myRangeValueHigh);
+  }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -60,7 +64,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       for (let i = 0; i < groupInd.length; i++) {
         const group = groups[groupInd[i]];
-        group[GUID] = {
+        group['clickbait_locator'] = {
           lowerRange: step * i,
           upperRange: step * (i + 1)
         }

@@ -6,14 +6,27 @@
     "http://*/*",
     "https://*/*",
     "webRequest",
+    "notifications",
     "storage",
     "history",
     "tabs"
   ],
+  "commands": {
+    "switch_toggler": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "windows": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Switch the link regitering toggler of the extension",
+      "global": true
+    }
+  },
   "background": {
     "scripts": [
       "background.js"
-    ]
+    ],
+    "persistent": true
   },
   "icons": {
     "16": "Icon-16.png",
@@ -31,7 +44,9 @@
   },
   "web_accessible_resources": [
     "blocked_green.png",
-    "blocked_red.png"
+    "blocked_red.png",
+    "clickbait.png",
+    "Icon-128.png"
   ],
   "content_scripts": [
     {

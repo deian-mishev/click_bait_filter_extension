@@ -1,23 +1,30 @@
+const convertLetterToNumber = (str) => str.toLowerCase().charCodeAt(0) - 96;
+
 export const getGuid = () => {
   var nav = window.navigator;
   var guid = nav.mimeTypes.length;
   guid += nav.userAgent.replace(/\D+/g, "");
   guid += nav.plugins.length;
+  guid += convertLetterToNumber(chrome.i18n.getMessage("@@extension_id"))
   return guid;
 }
 
 const GUID = getGuid();
 
-export const getToken = () => {
-  const token = localStorage.getItem(GUID);
-  return token || GUID;
+export const getToken = (callback) => {
+  chrome.storage.sync.get([GUID], function (result) {
+    const res = result && result[GUID] ? result[GUID] : GUID;
+    callback(res);
+  })
 };
 
-export const setToken = (a) => {
+export const setToken = (a, callback) => {
   const b = a.getResponseHeader('Authorization');
   if (b && b.indexOf('Bearer') === 0) {
     const token = b.replace('Bearer ', '');
-    localStorage.setItem(GUID, token)
+    chrome.storage.sync.set({ [GUID]: token }, callback);
+  } else {
+    callback();
   }
 };
 
@@ -29,18 +36,6 @@ export const getCookies = function () {
     cookies[(pair[0] + "").trim()] = unescape(pair[1]);
   }
   return cookies;
-};
-
-export const extractHostname = url => {
-  var hostname;
-  if (url.indexOf("//") > -1) {
-    hostname = url.split("/")[2];
-  } else {
-    hostname = url.split("/")[0];
-  }
-  hostname = hostname.split(":")[0];
-  hostname = hostname.split("?")[0];
-  return hostname;
 };
 
 const getCoverElement = (high) => {
@@ -97,12 +92,18 @@ const clearAllCover = (eHide, eShow) => {
   }
 }
 
-const applyFilter = (el, value) => {
+const applyFilter = (el, value, selector) => {
   value = value ? value : 1;
-  const multPx = value * (3 - 1) + 1;
-  const multGs = value * (90 - 70) + 70;
-  el.style.filter = `blur(${multPx}px) grayscale(${multGs}%)`;
-  el.classList.add('someCrasyClass');
+
+  if (!selector) {
+    const multPx = value * (2 - 1) + 1;
+    const multGs = value * (95 - 50) + 50;
+    el.style.filter = `blur(${multPx}px) grayscale(${multGs}%)`;
+    el.classList.add('someCrasyClass');
+  } else {
+    const multPx = value * (1 - 10) + 10;
+    el.style.filter = `drop-shadow(2px 2px ${multPx}px #13b71a)`;
+  }
 }
 
 const removeFilter = (el) => {
@@ -129,7 +130,7 @@ export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFi
   for (let j = 0; j < eShow.length; j++) {
     const element = eShow[j];
     const group = groups[linksToFilter[element.href]];
-    const meta = group[GUID];
+    const meta = group['clickbait_locator'];
 
     if (valueLow >= meta.upperRange) {
 
@@ -143,9 +144,7 @@ export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFi
       const diff = Math.abs(valueHigh - meta.lowerRange) / 90;
       let roundedDecimal = parseFloat(diff.toFixed(1));
       roundedDecimal = roundedDecimal !== 0.0 ? roundedDecimal : 0.1;
-      element.addEventListener('click', stopIt, false);
-      applyFilter(element, roundedDecimal);
-      addcover(element, true);
+      applyFilter(element, roundedDecimal, true);
     }
   }
 }

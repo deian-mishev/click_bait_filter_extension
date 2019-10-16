@@ -4,14 +4,77 @@
 <head>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="nouislider.min.css">
+  <style>
+    #slider-toggle {
+      width: 30px;
+    }
+
+    #slider-toggle .noUi-handle {
+      border: 1px solid rgb(160, 160, 160);
+      background-color: rgb(25, 100, 25);
+    }
+
+    #slider-toggle.off .noUi-handle {
+      border: 1px solid rgb(160, 160, 160);
+      background-color: rgb(100, 25, 25);
+    }
+
+    #myRange .noUi-tooltip {
+      display: none;
+    }
+
+    #myRange .noUi-active .noUi-tooltip {
+      display: block;
+    }
+
+    #myRange .noUi-handle {
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 20px !important;
+      background-position: center;
+      background-size: contain;
+    }
+
+    #myRange .noUi-handle::before,
+    #myRange .noUi-handle::after {
+      content: none !important;
+    }
+  </style>
 </head>
 
 <body>
   <div id="clickBaitHolder">
-    <h2>Clickbait Filter Extension</h2>
-    <div id="myRange"></div>
-    <script src="nouislider.min.js"></script>
-    <script src="popup.js"></script>
+    <img id="logo" src="" alt="Smiley face" height="50">
+    <h4 id="logo-text">Filtering Plugin</h2>
+      <div id='info-box'>
+        <div id='info-holder'>
+          <div class='sign-holder'>
+            <span class='sign'>Upper %:</span>
+            <div id='event-end'>
+            </div>
+          </div>
+          <div class='sign-holder'>
+            <span class='sign'>Lower %:</span>
+            <div id='event-start'>
+            </div>
+          </div>
+          <div id='application-info'>
+            This plugin filters links inside your viewed pages by using croudsourced information.
+            The links filtered with red are the ones which have been selected the least and thus deemed bad.
+            The links highlighted in green are the ones which have been most selected and therefore trustwurthy.
+          </div>
+          <div class='sign-holder adjusted'>
+            <span class='sign'>Register:</span>
+            <div id="slider-toggle"></div>
+          </div>
+          <div id='application-info' class="adjusted">
+            Click or Press CTRL+Q to toggle click registering.
+          </div>
+        </div>
+        <div id="myRange"></div>
+      </div>
+      <script src="nouislider.min.js"></script>
+      <script src="popup.js"></script>
   </div>
 </body>
 

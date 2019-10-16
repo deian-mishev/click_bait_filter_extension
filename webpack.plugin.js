@@ -34,8 +34,7 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: "./click_bait_filter_extension/plugin-src/popup.html" },
       { from: "./click_bait_filter_extension/plugin-src/nouislider" },
-      { from: "./click_bait_filter_extension/plugin-src/blocked_red.png" },
-      { from: "./click_bait_filter_extension/plugin-src/blocked_green.png" },
+      { from: "./click_bait_filter_extension/plugin-src/images" },
       { from: "./click_bait_filter_extension/manifest.json" },
       { from: "./click_bait_filter_extension/icons" }
     ])
