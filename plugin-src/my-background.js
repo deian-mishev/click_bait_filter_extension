@@ -3,7 +3,8 @@ import { PORT, API, URL } from './constants';
 
 const SERVER_ADDRESS = `${URL}:${PORT}/${API}`;
 const GUID = getGuid();
-let isEnabled;
+let isEnabledReg;
+let isEnabledTop;
 // REQUESTING SEGMENTATION FROM BACKEND
 const filterScenes = (tabId, changeInfo, tab) => {
   const xhttp = new XMLHttpRequest();
@@ -63,27 +64,63 @@ const callback = (x
   }
 };
 
-chrome.commands.onCommand.addListener(function (command) {
-  if (command === 'switch_toggler') {
-    isEnabled = isEnabled === 1 ? 0 : 1;
-    setEnabled(isEnabled);
+const sendRegToFront = isEnabledReg => {
+  var views = chrome.extension.getViews({ type: "popup" });
+  if (views.length > 0) {
+    chrome.runtime.sendMessage({ type: "switch_toggler", value: isEnabledReg }, null);
+  } else {
     var time = /(..)(:..)/.exec(new Date());     // The prettyprinted time.
     var hour = time[1] % 12 || 12;               // The prettyprinted hour.
     var period = time[1] < 12 ? 'a.m.' : 'p.m.';
     new Notification(hour + time[2] + ' ' + period, {
-      icon: 'Icon-48.png',
-      body: `You just ${isEnabled === 1 ? 'ACTIVATED' : 'DEACTIVATED'} click registy!`
+      icon: 'Icon-128.png',
+      body: `You just ${isEnabledReg ? 'activated' : 'deactivated'} click registy!`
     });
-    var views = chrome.extension.getViews({ type: "popup" });
-    if (views.length > 0) {
-      chrome.runtime.sendMessage({ type: "switch_toggler", value: isEnabled }, null);
-    }
+  }
+}
+
+const sendTopToFront = isEnabledTop => {
+  var views = chrome.extension.getViews({ type: "popup" });
+  if (views.length > 0) {
+    chrome.runtime.sendMessage({ type: "switch_topology", value: isEnabledTop }, null);
+  } else {
+    var time = /(..)(:..)/.exec(new Date());     // The prettyprinted time.
+    var hour = time[1] % 12 || 12;               // The prettyprinted hour.
+    var period = time[1] < 12 ? 'a.m.' : 'p.m.';
+    new Notification(hour + time[2] + ' ' + period, {
+      icon: 'Icon-128.png',
+      body: `You just ${isEnabledTop ? 'activated' : 'deactivated'} page topology view!`
+    });
+  }
+}
+
+chrome.commands.onCommand.addListener(function (command) {
+  if (command === 'switch_toggler') {
+    isEnabledReg = !isEnabledReg;
+    setEnabled(isEnabledReg);
+    sendRegToFront(isEnabledReg)
+  } else if (command === 'switch_topology') {
+    isEnabledTop = !isEnabledTop;
+    setTopology(isEnabledTop);
+    sendTopToFront(isEnabledTop)
   }
 });
 
+const setTopology = (enabled) => {
+  chrome.storage.sync.set({ "showTopology": enabled }, function () {
+    chrome.tabs.getSelected(null, function (tab) {
+      if (tab && tab.id > -1) {
+        chrome.tabs.sendMessage(tab.id, {
+          value: enabled, type: 'showTopology'
+        });
+      }
+    })
+  });
+}
+
 const setEnabled = (enabled) => {
   chrome.storage.sync.set({ "registerChange": enabled }, function () {
-    if (enabled === 1) {
+    if (enabled) {
       chrome.webRequest.onBeforeRequest.addListener(callback, {
         urls: [
           "http://*/*",
@@ -101,20 +138,28 @@ const setEnabled = (enabled) => {
   })
 }
 
-chrome.storage.sync.get(["registerChange"], function (result) {
-  isEnabled = result && result.registerChange !== undefined ? result.registerChange : 0;
-  setEnabled(isEnabled);
+chrome.storage.sync.get(["registerChange", "showTopology"], function (result) {
+  let tempReg = false;
+  let tempTop = false;
+  if (result) {
+    tempReg = result.registerChange !== undefined ? result.registerChange : true;
+    tempTop = result.showTopology !== undefined ? result.showTopology : false;
+  }
+  setEnabled(tempReg);
+  setTopology(tempTop);
 });
 
 chrome.tabs.onActiveChanged.addListener(filterScenes);
 chrome.tabs.onUpdated.addListener(filterScenes);
 
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
     case 'registerChange':
-      const value = request.value;
-      setEnabled(value);
+      setEnabled(request.value);
+      sendResponse(request);
+      break;
+    case 'showTopology':
+      setTopology(request.value);
       sendResponse(request);
       break;
     default:

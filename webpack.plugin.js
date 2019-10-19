@@ -2,6 +2,8 @@ const { resolve } = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebpackChromeReloaderPlugin = require("../dist/webpack-chrome-extension-reloader");
+const TerserJSPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const mode = process.env.NODE_ENV;
 
@@ -10,7 +12,7 @@ console.log();
 
 module.exports = {
   mode,
-  devtool: "inline-source-map",
+  // devtool: "inline-source-map",
   entry: {
     "content-script":
       "./click_bait_filter_extension/plugin-src/my-content-script.js",
@@ -23,6 +25,9 @@ module.exports = {
     path: resolve(__dirname, "dist/"),
     filename: "[name].js",
     libraryTarget: "umd"
+  },
+  optimization: {
+    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
   },
   plugins: [
     /***********************************************************************/

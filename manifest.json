@@ -1,6 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Click Bait Filter Extension",
+  "short_name": "Bait Filter",
   "version": "0.1",
   "permissions": [
     "http://*/*",
@@ -14,11 +15,20 @@
   "commands": {
     "switch_toggler": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "windows": "Ctrl+Shift+Y",
-        "mac": "Command+Shift+Y"
+        "default": "Ctrl+Shift+L",
+        "windows": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
       },
-      "description": "Switch the link regitering toggler of the extension",
+      "description": "Switches link registering on and off",
+      "global": true
+    },
+    "switch_topology": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+T",
+        "windows": "Ctrl+Shift+T",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Displays and hides page topology",
       "global": true
     }
   },
@@ -43,8 +53,6 @@
     "default_title": "Chrome Clickbait Filter"
   },
   "web_accessible_resources": [
-    "blocked_green.png",
-    "blocked_red.png",
     "clickbait.png",
     "Icon-128.png"
   ],

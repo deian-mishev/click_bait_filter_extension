@@ -1,4 +1,4 @@
-import { showhideDom, addStyleString } from "./utils";
+import { showhideDom, addStyleString, showTopology } from "./utils";
 
 let valueLow;
 let valueHigh;
@@ -20,6 +20,15 @@ chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh"], function (resul
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
+    case 'showTopology':
+      // chrome.storage.sync.set({ myRangeValueLow: valueLow, myRangeValueHigh: valueHigh });
+      if (request.value) {
+        showTopology(eHide, eShow, groups, linksToFilter);
+      } else {
+        showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
+      }
+      sendResponse(request);
+      break;
     case 'rangeChange':
       // Filter according to range change
       valueLow = parseInt(request.valueLow);
@@ -29,7 +38,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       break;
     case 'pageSegmentation':
       addStyleString(
-        `.someCrasyClass { 
+        `.clickbait-filter-locator { 
         pointer-events: none;
         user-select: none;
       }`);
@@ -64,14 +73,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       for (let i = 0; i < groupInd.length; i++) {
         const group = groups[groupInd[i]];
+        const low = step * i;
+        const high = step * (i + 1);
         group['clickbait_locator'] = {
-          lowerRange: step * i,
-          upperRange: step * (i + 1)
+          lowerRange: low,
+          upperRange: high,
+          // mid: Math.floor(Math.abs(high - low) / 2) + low
         }
       }
 
+      chrome.storage.sync.get(["showTopology"], function (result) {
+        if (result.showTopology === undefined || !result.showTopology) {
+          showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
+        } else {
+          showTopology(eHide, eShow, groups, linksToFilter);
+        }
+      });
+
       sendResponse(linksToFilter);
-      showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
       break;
     default:
   }

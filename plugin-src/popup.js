@@ -4,13 +4,16 @@
  */
 import "./style.css";
 
-const myRange = document.getElementById('myRange');
 const clickbait = chrome.runtime.getURL('clickbait.png');
 const logo = document.getElementById('logo');
 logo.src = clickbait;
 
-chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh", "registerChange"], function (result) {
-    let isEnabled = result && result.registerChange !== undefined ? result.registerChange ? 1 : 0 : 0;
+chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh", "registerChange", "showTopology"], function (result) {
+    const isEnabledReg = result && result.registerChange !== undefined ? result.registerChange : false;
+    const isEnabledTop = result && result.showTopology !== undefined ? result.showTopology : false;
+
+    const myRange = document.getElementById('clickbait_range');
+
     noUiSlider.create(myRange, {
         connect: true,
         range: {
@@ -38,19 +41,6 @@ chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh", "registerChange"
         })
     });
 
-    const pips = myRange.querySelectorAll('.noUi-value');
-
-    function clickOnPip() {
-        const value = Number(this.getAttribute('data-value'));
-        myRange.noUiSlider.set(value);
-    }
-
-    for (var i = 0; i < pips.length; i++) {
-        // For this example. Do this in CSS!
-        pips[i].style.cursor = 'pointer';
-        pips[i].addEventListener('click', clickOnPip);
-    }
-
     const dateValues = [
         document.getElementById('event-start'),
         document.getElementById('event-end')
@@ -68,35 +58,43 @@ chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh", "registerChange"
     }
 
     var toggleSlider = document.getElementById('slider-toggle');
-
-    noUiSlider.create(toggleSlider, {
-        start: isEnabled,
-        range: {
-            'min': [0, 1],
-            'max': 1
-        }
+    toggleSlider.checked = isEnabledReg ? true : false;
+    toggleSlider.addEventListener('change', (event) => {
+        chrome.runtime.sendMessage({ type: "registerChange", value: event.target.checked }, null);
     });
 
-    toggleSlider.noUiSlider.on('update', function (values, handle) {
-        if (parseInt(values[handle]) === 1) {
-            toggleSlider.classList.remove('off');
+    var sliderBack = document.getElementById('slider-back');
+    function changeTopology(val) {
+        toggleSlider.disabled = val;
+        if (val) {
+            sliderBack.classList.add('slider-disabled');
+            myRange.setAttribute('disabled', true);
         } else {
-            toggleSlider.classList.add('off');
+            sliderBack.classList.remove('slider-disabled');
+            myRange.removeAttribute('disabled');
         }
+    }
+
+    var topologySlider = document.getElementById('topology-toggle');
+    topologySlider.checked = isEnabledTop ? true : false;
+    topologySlider.addEventListener('change', (event) => {
+        chrome.runtime.sendMessage({ type: "showTopology", value: event.target.checked }, null);
+        changeTopology(event.target.checked)
     });
 
-    toggleSlider.noUiSlider.on('change', function (values, handle) {
-        chrome.runtime.sendMessage({ type: "registerChange", value: parseInt(values[handle]) }, null);
-    });
+    changeTopology(isEnabledTop);
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch (request.type) {
             case 'switch_toggler':
-                const value = request.value;
-                toggleSlider.noUiSlider.set(value);
-                sendResponse(request);
+                toggleSlider.checked = request.value;
+                break;
+            case 'switch_topology':
+                topologySlider.checked = request.value;
+                changeTopology(request.value)
                 break;
             default:
         }
+        sendResponse(request);
     });
 });

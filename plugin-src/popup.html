@@ -5,29 +5,23 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="nouislider.min.css">
   <style>
-    #slider-toggle {
-      width: 30px;
+    .noUi-connect {
+      background: #2196F3;
     }
 
-    #slider-toggle .noUi-handle {
-      border: 1px solid rgb(160, 160, 160);
-      background-color: rgb(25, 100, 25);
+    .clickbait_range_class .noUi-target {
+      border-radius: 1px;
     }
 
-    #slider-toggle.off .noUi-handle {
-      border: 1px solid rgb(160, 160, 160);
-      background-color: rgb(100, 25, 25);
-    }
-
-    #myRange .noUi-tooltip {
+    .clickbait_range_class .noUi-tooltip {
       display: none;
     }
 
-    #myRange .noUi-active .noUi-tooltip {
+    .clickbait_range_class .noUi-active .noUi-tooltip {
       display: block;
     }
 
-    #myRange .noUi-handle {
+    .clickbait_range_class .noUi-handle {
       width: 28px !important;
       height: 28px !important;
       border-radius: 20px !important;
@@ -35,14 +29,14 @@
       background-size: contain;
     }
 
-    #myRange .noUi-handle::before,
-    #myRange .noUi-handle::after {
+    .clickbait_range_class .noUi-handle::before,
+    .clickbait_range_class .noUi-handle::after {
       content: none !important;
     }
   </style>
 </head>
 
-<body>
+<body id='somecrasyhorse'>
   <div id="clickBaitHolder">
     <img id="logo" src="" alt="Smiley face" height="50">
     <h4 id="logo-text">Filtering Plugin</h2>
@@ -65,13 +59,23 @@
           </div>
           <div class='sign-holder adjusted'>
             <span class='sign'>Register:</span>
-            <div id="slider-toggle"></div>
+            <label class='switch'>
+              <input id='slider-toggle' type='checkbox'>
+              <span class='slider' id='slider-back'></span>
+            </label>
           </div>
           <div id='application-info' class="adjusted">
-            Click or Press CTRL+Q to toggle click registering.
+            Click or HotKey to toggle click registering.
+          </div>
+          <div class='sign-holder adjusted'>
+            <span class='sign'>Topology:</span>
+            <label class='switch'>
+              <input id='topology-toggle' type='checkbox'>
+              <span class='slider'></span>
+            </label>
           </div>
         </div>
-        <div id="myRange"></div>
+        <div id="clickbait_range" class="clickbait_range_class"></div>
       </div>
       <script src="nouislider.min.js"></script>
       <script src="popup.js"></script>

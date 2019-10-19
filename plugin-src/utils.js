@@ -41,7 +41,7 @@ export const getCookies = function () {
 const getCoverElement = (high) => {
   const cover = document.createElement("DIV");
   let blockedUrl
-    = chrome.runtime.getURL(high ? 'blocked_green.png' : 'blocked_red.png');
+    = chrome.runtime.getURL('Icon-128.png');
   cover.style.backgroundImage = `url(${blockedUrl})`;
   cover.style.backgroundRepeat = 'no-repeat';
   cover.style.backgroundPosition = 'center center';
@@ -49,6 +49,7 @@ const getCoverElement = (high) => {
   cover.style.width = '100%';
   cover.style.height = '100%';
   cover.style.position = 'absolute';
+  cover.style.opacity = 0.5;
   cover.style.top = '0px';
   cover.style.left = '0px';
   cover.className = GUID;
@@ -73,7 +74,7 @@ const stopIt = (event) => {
   event.preventDefault();
 }
 
-const clearAllCover = (eHide, eShow) => {
+export const clearAllCover = (eHide, eShow) => {
   const paras = document.getElementsByClassName(GUID);
   while (paras[0]) {
     paras[0].parentNode.removeChild(paras[0]);
@@ -92,14 +93,39 @@ const clearAllCover = (eHide, eShow) => {
   }
 }
 
+const addTopologyStyle = (el, value) => {
+  const rest = 1 - value;
+  const red = Math.floor(rest * (255 + 1));
+  const green = Math.floor(value * (255 + 1));
+  const color = `rgb(${red}, ${green}, 0)`;
+  el.style.filter = `drop-shadow(2px 2px 10px ${color})`;
+}
+
+export const showTopology = (eHide, eShow, groups, linksToFilter) => {
+  clearAllCover(eHide, eShow);
+
+  for (let index = 0; index < eHide.length; index++) {
+    let element = eHide[index];
+    addTopologyStyle(element, 0);
+  }
+
+  for (let j = 0; j < eShow.length; j++) {
+    const element = eShow[j];
+    const group = groups[linksToFilter[element.href]];
+    const meta = group['clickbait_locator'];
+
+    addTopologyStyle(element, meta.upperRange / 100);
+  }
+}
+
 const applyFilter = (el, value, selector) => {
   value = value ? value : 1;
 
   if (!selector) {
     const multPx = value * (2 - 1) + 1;
     const multGs = value * (95 - 50) + 50;
-    el.style.filter = `blur(${multPx}px) grayscale(${multGs}%)`;
-    el.classList.add('someCrasyClass');
+    el.classList.add('clickbait-filter-locator');
+    el.style.filter = `grayscale(${multGs}%)`;
   } else {
     const multPx = value * (1 - 10) + 10;
     el.style.filter = `drop-shadow(2px 2px ${multPx}px #13b71a)`;
@@ -107,8 +133,8 @@ const applyFilter = (el, value, selector) => {
 }
 
 const removeFilter = (el) => {
+  el.classList.remove('clickbait-filter-locator');
   el.style.filter = null;
-  el.classList.remove('someCrasyClass');
 }
 
 export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFilter) => {
