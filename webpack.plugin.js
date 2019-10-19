@@ -12,7 +12,7 @@ console.log();
 
 module.exports = {
   mode,
-  // devtool: "inline-source-map",
+  devtool: mode === 'production' ? false : "inline-source-map",
   entry: {
     "content-script":
       "./click_bait_filter_extension/plugin-src/my-content-script.js",
@@ -30,9 +30,6 @@ module.exports = {
     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
   },
   plugins: [
-    /***********************************************************************/
-    /* By default the plugin will work only when NODE_ENV is "development" */
-    /***********************************************************************/
     new WebpackChromeReloaderPlugin(),
 
     new MiniCssExtractPlugin({ filename: "style.css" }),
