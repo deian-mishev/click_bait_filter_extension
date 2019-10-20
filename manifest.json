@@ -9,7 +9,6 @@
     "webRequest",
     "notifications",
     "storage",
-    "history",
     "tabs"
   ],
   "commands": {
