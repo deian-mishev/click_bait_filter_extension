@@ -3,6 +3,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebpackChromeReloaderPlugin = require("../dist/webpack-chrome-extension-reloader");
 const TerserJSPlugin = require('terser-webpack-plugin');
+const ZipPlugin = require('zip-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const mode = process.env.NODE_ENV;
@@ -31,7 +32,6 @@ module.exports = {
   },
   plugins: [
     new WebpackChromeReloaderPlugin(),
-
     new MiniCssExtractPlugin({ filename: "style.css" }),
     new CopyWebpackPlugin([
       { from: "./click_bait_filter_extension/plugin-src/popup.html" },
@@ -39,7 +39,11 @@ module.exports = {
       { from: "./click_bait_filter_extension/plugin-src/images" },
       { from: "./click_bait_filter_extension/manifest.json" },
       { from: "./click_bait_filter_extension/icons" }
-    ])
+    ]),
+    new ZipPlugin({
+      filename: 'clickbait_filtering_plugin.zip',
+      include: [/\.*$/]
+    })
   ],
   module: {
     rules: [

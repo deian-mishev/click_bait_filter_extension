@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Click Bait Filter Extension",
-  "short_name": "Bait Filter",
+  "name": "ClickBait Filtering Plugin",
+  "short_name": "ClickBait Filter",
   "version": "0.1",
   "permissions": [
     "http://*/*",
@@ -49,7 +49,7 @@
       "128": "Icon-128.png"
     },
     "default_popup": "popup.html",
-    "default_title": "Chrome Clickbait Filter"
+    "default_title": "ClickBait Filter"
   },
   "web_accessible_resources": [
     "clickbait.png",
