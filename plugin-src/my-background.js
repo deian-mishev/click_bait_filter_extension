@@ -1,7 +1,7 @@
 import { getToken, setToken, getGuid } from "./utils";
-import { API, HEROKU_ADDRESS } from './constants';
+import { API, COMBO } from './constants';
 
-const SERVER_ADDRESS = `${HEROKU_ADDRESS}/${API}`
+const SERVER_ADDRESS = `${COMBO}/${API}`
 const GUID = getGuid();
 let isEnabledReg;
 let isEnabledTop;
