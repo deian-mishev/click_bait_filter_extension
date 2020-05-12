@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "ClickBait Filtering Plugin",
-  "short_name": "ClickBait Filter",
-  "version": "0.1",
+  "version": "1.0",
+  "description": "A plot to rid the web of clickbait.",
   "permissions": [
     "http://*/*",
     "https://*/*",
@@ -11,6 +11,7 @@
     "storage",
     "tabs"
   ],
+  "short_name": "ClickBait Filter",
   "commands": {
     "switch_toggler": {
       "suggested_key": {
