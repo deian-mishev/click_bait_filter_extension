@@ -1,7 +1,7 @@
 import { getToken, setToken, getGuid } from "./utils";
-import { API, COMBO } from './constants';
+import { API, ADDRESS } from './constants';
 
-const SERVER_ADDRESS = `${COMBO}/${API}`
+const SERVER_ADDRESS = `${ADDRESS}/${API}`
 const GUID = getGuid();
 let isEnabledReg;
 let isEnabledTop;
