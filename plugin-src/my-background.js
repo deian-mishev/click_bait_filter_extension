@@ -31,21 +31,21 @@ const filterScenes = (tabId, changeInfo, tab) => {
       }
     };
 
-    chrome.tabs.sendMessage(tabId, {
-      type: 'pageLinksGather'
-    }, function (linksGathered) {
-      if (changeInfo.status === 'complete' && tab.url.indexOf('http') === 0) {
+    if (changeInfo.status === 'complete' && tab.url.indexOf('http') === 0) {
+      chrome.tabs.sendMessage(tabId, {
+        type: 'pageLinksGather'
+      }, function (linksGathered) {
         xhttp.send(JSON.stringify({
           tabId,
           page: tab.url,
           links: linksGathered
         }));
-      } else if (!changeInfo.favIconUrl && changeInfo.status !== 'complete') {
-        xhttp.send(JSON.stringify({
-          tabId
-        }));
-      }
-    });
+      });
+    } else if (!changeInfo.favIconUrl && changeInfo.status !== 'complete') {
+      xhttp.send(JSON.stringify({
+        tabId
+      }));
+    }
   }
   getToken(callb);
 };
