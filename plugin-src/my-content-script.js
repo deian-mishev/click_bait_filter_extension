@@ -3,6 +3,7 @@ import { showhideDom, addStyleString, showTopology } from "./utils";
 let valueLow;
 let valueHigh;
 let linksToFilter;
+let runtimeLinks = [];
 let eHide = [];
 let eShow = [];
 const groups = {}
@@ -20,6 +21,17 @@ chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh"], function (resul
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
+    case 'pageLinksGather':
+      runtimeLinks = [];
+      const pageNodes = document.querySelectorAll('a');
+      for (let index = 0; index < pageNodes.length; index++) {
+        const currentNode = pageNodes[index].href;
+        if (runtimeLinks.indexOf(currentNode) === -1) {
+          runtimeLinks.push(pageNodes[index].href);
+        }
+      }
+      sendResponse(runtimeLinks);
+      break;
     case 'showTopology':
       // chrome.storage.sync.set({ myRangeValueLow: valueLow, myRangeValueHigh: valueHigh });
       if (request.value) {
