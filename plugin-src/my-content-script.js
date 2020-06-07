@@ -59,48 +59,54 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       // Store links to filter for page
       // and filter according to range change
       linksToFilter = request.links;
-      const urlNodes = document.querySelectorAll('a');
-      // More like show potentially
-      for (let index = 0; index < urlNodes.length; index++) {
-        const element = urlNodes[index];
-        if (!linksToFilter[element.href]) {
-          eHide.push(element);
-        } else {
-          eShow.push(element);
+      if (linksToFilter) {
+
+        const urlNodes = document.querySelectorAll('a');
+        // More like show potentially
+        for (let index = 0; index < urlNodes.length; index++) {
+          const element = urlNodes[index];
+          if (!linksToFilter[element.href]) {
+            // Decided to not mess arround with anything 
+            // not crunched by the model
+            // eHide.push(element);
+          } else {
+            eShow.push(element);
+          }
         }
+
+        const keys = Object.keys(linksToFilter);
+        keys.sort(function (a, b) { return linksToFilter[a] > linksToFilter[b] ? 1 : -1 });
+
+        for (let i = 0; i < keys.length; i++) {
+          const element = keys[i];
+          if (!groups[linksToFilter[element]]) groups[linksToFilter[element]] = [];
+          groups[linksToFilter[element]].push(element)
+        }
+
+
+        const groupInd = Object.keys(groups)
+        const step = 100 / groupInd.length;
+
+        for (let i = 0; i < groupInd.length; i++) {
+          const group = groups[groupInd[i]];
+          const low = step * i;
+          const high = step * (i + 1);
+          group['clickbait_locator'] = {
+            lowerRange: low,
+            upperRange: high,
+            // mid: Math.floor(Math.abs(high - low) / 2) + low
+          }
+        }
+
+        chrome.storage.sync.get(["showTopology"], function (result) {
+          if (result.showTopology === undefined || !result.showTopology) {
+            showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
+          } else {
+            showTopology(eHide, eShow, groups, linksToFilter);
+          }
+        });
       }
 
-      const keys = Object.keys(linksToFilter);
-
-      keys.sort(function (a, b) { return linksToFilter[a] < linksToFilter[b] ? 1 : -1 });
-
-      for (let i = 0; i < keys.length; i++) {
-        const element = keys[i];
-        if (!groups[linksToFilter[element]]) groups[linksToFilter[element]] = [];
-        groups[linksToFilter[element]].push(element)
-      }
-
-      const groupInd = Object.keys(groups)
-      const step = 100 / groupInd.length;
-
-      for (let i = 0; i < groupInd.length; i++) {
-        const group = groups[groupInd[i]];
-        const low = step * i;
-        const high = step * (i + 1);
-        group['clickbait_locator'] = {
-          lowerRange: low,
-          upperRange: high,
-          // mid: Math.floor(Math.abs(high - low) / 2) + low
-        }
-      }
-
-      chrome.storage.sync.get(["showTopology"], function (result) {
-        if (result.showTopology === undefined || !result.showTopology) {
-          showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);
-        } else {
-          showTopology(eHide, eShow, groups, linksToFilter);
-        }
-      });
 
       sendResponse(linksToFilter);
       break;
