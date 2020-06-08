@@ -1,25 +1,37 @@
 const { resolve } = require("path");
+const webpack = require('webpack');
+const ZipPlugin = require('zip-webpack-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WebpackChromeReloaderPlugin = require("../dist/webpack-chrome-extension-reloader");
-const TerserJSPlugin = require('terser-webpack-plugin');
-const ZipPlugin = require('zip-webpack-plugin');
+const WebpackChromeReloaderPlugin = require("./webpack-chrome-extension-reloader");
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-const mode = process.env.NODE_ENV;
+const MODE = process.env.NODE_ENV;
+const BE_ADDRESS = process.env.BE_ADDRESS;
+const API = process.env.API;
 
-console.log("APPLICATION RUNNING IN MODE:", mode);
+if (!MODE || !BE_ADDRESS || !API) {
+  console.log('-------------');
+  console.log('MODE: ' + MODE);
+  console.log('API: ' + API);
+  console.log('BE_ADDRESS: ' + BE_ADDRESS);
+  console.log('-------------');
+  throw Error('Bad Config')
+}
+
+console.log("APPLICATION RUNNING IN MODE:", MODE);
 console.log();
 
 module.exports = {
-  mode,
-  devtool: mode === 'production' ? false : "inline-source-map",
+  mode: MODE,
+  devtool: MODE === 'production' ? false : "inline-source-map",
   entry: {
     "content-script":
-      "./click_bait_filter_extension/plugin-src/my-content-script.js",
-    background: "./click_bait_filter_extension/plugin-src/my-background.js",
+      "./plugin-src/my-content-script.js",
+    background: "./plugin-src/my-background.js",
     // This is just the popup script, it shouldn't trigger the plugin reload when is changed
-    popup: "./click_bait_filter_extension/plugin-src/popup.js"
+    popup: "./plugin-src/popup.js"
   },
   output: {
     publicPath: "F.",
@@ -31,14 +43,18 @@ module.exports = {
     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      BE_ADDRESS: JSON.stringify(BE_ADDRESS),
+      API: JSON.stringify(API)
+    }),
     new WebpackChromeReloaderPlugin(),
     new MiniCssExtractPlugin({ filename: "style.css" }),
     new CopyWebpackPlugin([
-      { from: "./click_bait_filter_extension/plugin-src/popup.html" },
-      { from: "./click_bait_filter_extension/plugin-src/nouislider" },
-      { from: "./click_bait_filter_extension/plugin-src/images" },
-      { from: "./click_bait_filter_extension/manifest.json" },
-      { from: "./click_bait_filter_extension/icons" }
+      { from: "./plugin-src/popup.html" },
+      { from: "./plugin-src/nouislider" },
+      { from: "./plugin-src/images" },
+      { from: "./manifest.json" },
+      { from: "./icons" }
     ]),
     new ZipPlugin({
       filename: 'clickbait_filtering_plugin.zip',

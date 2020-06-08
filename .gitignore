@@ -1,2 +1,4 @@
 dist
 plugin-src/constants.js
+node_modules/
+.vscode/
