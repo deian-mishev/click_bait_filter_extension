@@ -89,8 +89,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         for (let i = 0; i < groupInd.length; i++) {
           const group = groups[groupInd[i]];
-          const low = step * i;
-          const high = step * (i + 1);
+          const low = 100 - (step * i);
+          const high = 100 - (step * (i + 1));
           group['clickbait_locator'] = {
             lowerRange: low,
             upperRange: high,
