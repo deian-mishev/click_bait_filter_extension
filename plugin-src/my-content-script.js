@@ -1,4 +1,5 @@
 import { showhideDom, addStyleString, showTopology } from "./utils";
+const { getUrl } = require('./../../click_bait_filter_be/api/url_get');
 
 let valueLow;
 let valueHigh;
@@ -22,12 +23,15 @@ chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh"], function (resul
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
     case 'pageLinksGather':
-      runtimeLinks = [];
+      runtimeLinks = {};
       const pageNodes = document.querySelectorAll('a');
       for (let index = 0; index < pageNodes.length; index++) {
         const currentNode = pageNodes[index].href;
-        if (runtimeLinks.indexOf(currentNode) === -1) {
-          runtimeLinks.push(pageNodes[index].href);
+        if (!runtimeLinks[currentNode]) {
+          const url = getUrl(currentNode);
+          if (url) {
+            runtimeLinks[currentNode] = url;
+          }
         }
       }
       sendResponse(runtimeLinks);
@@ -83,7 +87,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           groups[linksToFilter[element]].push(element)
         }
 
-
         const groupInd = Object.keys(groups)
         const step = 100 / groupInd.length;
 
@@ -97,7 +100,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             // mid: Math.floor(Math.abs(high - low) / 2) + low
           }
         }
-
         chrome.storage.sync.get(["showTopology"], function (result) {
           if (result.showTopology === undefined || !result.showTopology) {
             showhideDom(valueLow, valueHigh, eHide, eShow, groups, linksToFilter);

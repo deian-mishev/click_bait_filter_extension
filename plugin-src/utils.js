@@ -158,7 +158,7 @@ export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFi
     const group = groups[linksToFilter[element.href]];
     const meta = group['clickbait_locator'];
 
-    if (valueLow >= meta.upperRange) {
+    if (valueLow > meta.upperRange) {
 
       const diff = Math.abs(meta.upperRange - valueLow) / 90;
       let roundedDecimal = parseFloat(diff.toFixed(1));
@@ -166,7 +166,7 @@ export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFi
       element.addEventListener('click', stopIt, false);
       applyFilter(element, roundedDecimal);
       addcover(element);
-    } else if (valueHigh <= meta.lowerRange) {
+    } else if (valueHigh < meta.lowerRange) {
       const diff = Math.abs(valueHigh - meta.lowerRange) / 90;
       let roundedDecimal = parseFloat(diff.toFixed(1));
       roundedDecimal = roundedDecimal !== 0.0 ? roundedDecimal : 0.1;
