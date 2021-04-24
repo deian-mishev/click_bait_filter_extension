@@ -38,7 +38,7 @@ This service is a part of a multi application project that features the followin
 | Service Name                                  | Description                         | Maintainer              |
 | ----------------------------------------      |:------------------------------------|:------------------------|
 | [click_bait_filter_extension]                 | Chrome Extensions Plugin            | [LeadShuriken]          |
-| [click_bait_filter_be]                        | Node Application Test Server        | [LeadShuriken]          |
+| [click_bait_filter_be]\(TEST_SERVER)           | Node Application Test Server        | [LeadShuriken]          |
 | [click_bait_filter_j]                         | Spring Production Server            | [LeadShuriken]          |
 | [click_bait_filter_tflow]                     | Java Tensor Flow Server             | [LeadShuriken]          |
 | [click_bait_filter_ml]                        | TensorFlow Model Generator/Updater  | [LeadShuriken]          |
