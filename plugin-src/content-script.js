@@ -1,5 +1,5 @@
 import { showhideDom, addStyleString, showTopology } from "./utils";
-const { getUrl } = require('./../../click_bait_filter_be/api/url_get');
+const { getUrl } = require('../../click_bait_filter_be/api/url_get');
 
 let valueLow;
 let valueHigh;
@@ -24,13 +24,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
     case 'pageLinksGather':
       runtimeLinks = {};
+      tempspace = [];
       const pageNodes = document.querySelectorAll('a');
       for (let index = 0; index < pageNodes.length; index++) {
         const currentNode = pageNodes[index].href;
-        if (!runtimeLinks[currentNode]) {
-          const url = getUrl(currentNode);
-          if (url) {
+        const url = getUrl(currentNode);
+        if (url) {
+          const joined_url = url.join('');
+          if (!tempspace.includes(joined_url)) {
             runtimeLinks[currentNode] = url;
+            tempspace.push(joined_url);
           }
         }
       }

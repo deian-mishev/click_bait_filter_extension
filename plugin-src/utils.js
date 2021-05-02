@@ -11,11 +11,18 @@ export const getGuid = () => {
 
 const GUID = getGuid();
 
-export const getToken = (callback) => {
+export const getToken = callback => {
   chrome.storage.sync.get([GUID], function (result) {
     const res = result && result[GUID] ? result[GUID] : GUID;
     callback(res);
   })
+};
+
+export const prettyPrintTime = () => {
+  var time = /(..)(:..)/.exec(new Date());
+  var hour = time[1] % 12 || 12;
+  var period = time[1] < 12 ? 'a.m.' : 'p.m.';
+  return hour + time[2] + ' ' + period
 };
 
 export const setToken = (a, callback) => {
@@ -28,7 +35,7 @@ export const setToken = (a, callback) => {
   }
 };
 
-export const getCookies = function () {
+export const getCookies = () => {
   var pairs = document.cookie.split(";");
   var cookies = {};
   for (var i = 0; i < pairs.length; i++) {
@@ -38,7 +45,7 @@ export const getCookies = function () {
   return cookies;
 };
 
-const getCoverElement = (high) => {
+const getCoverElement = () => {
   const cover = document.createElement("DIV");
   let blockedUrl
     = chrome.runtime.getURL('Icon-128.png');
@@ -57,19 +64,19 @@ const getCoverElement = (high) => {
   return cover;
 }
 
-const addcover = (element, above) => {
+const addcover = element => {
   element.childNodes.length == 0 && (element.style.position = 'relative');
-  const cover = getCoverElement(above);
+  const cover = getCoverElement();
   element.appendChild(cover);
 }
 
-export const addStyleString = (str) => {
+export const addStyleString = str => {
   var node = document.createElement('style');
   node.innerHTML = str;
   document.body.appendChild(node);
 }
 
-const stopIt = (event) => {
+const stopIt = event => {
   event.stopPropagation();
   event.preventDefault();
 }
@@ -132,7 +139,7 @@ const applyFilter = (el, value, selector) => {
   }
 }
 
-const removeFilter = (el) => {
+const removeFilter = el => {
   el.classList.remove('clickbait-filter-locator');
   el.style.filter = null;
 }

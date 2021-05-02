@@ -1,4 +1,4 @@
-import { getToken, setToken, getGuid } from "./utils";
+import { getToken, setToken, getGuid, prettyPrintTime } from "./utils";
 
 const SERVER_ADDRESS = `${BE_ADDRESS}/${API}`
 const GUID = getGuid();
@@ -49,8 +49,7 @@ const filterScenes = (tabId, changeInfo, tab) => {
   getToken(callb);
 };
 
-const callback = (x
-) => {
+const callback = x => {
   if (x.type === "main_frame" && x.initiator) {
     const xhttp = new XMLHttpRequest();
     xhttp.open("POST", `${SERVER_ADDRESS}/click`, true);
@@ -73,10 +72,7 @@ const sendRegToFront = isEnabledReg => {
   if (views.length > 0) {
     chrome.runtime.sendMessage({ type: "switch_toggler", value: isEnabledReg }, null);
   } else {
-    var time = /(..)(:..)/.exec(new Date());     // The prettyprinted time.
-    var hour = time[1] % 12 || 12;               // The prettyprinted hour.
-    var period = time[1] < 12 ? 'a.m.' : 'p.m.';
-    new Notification(hour + time[2] + ' ' + period, {
+    new Notification(prettyPrintTime(), {
       icon: 'Icon-128.png',
       body: `You just ${isEnabledReg ? 'activated' : 'deactivated'} click registy!`
     });
@@ -88,10 +84,7 @@ const sendTopToFront = isEnabledTop => {
   if (views.length > 0) {
     chrome.runtime.sendMessage({ type: "switch_topology", value: isEnabledTop }, null);
   } else {
-    var time = /(..)(:..)/.exec(new Date());     // The prettyprinted time.
-    var hour = time[1] % 12 || 12;               // The prettyprinted hour.
-    var period = time[1] < 12 ? 'a.m.' : 'p.m.';
-    new Notification(hour + time[2] + ' ' + period, {
+    new Notification(prettyPrintTime(), {
       icon: 'Icon-128.png',
       body: `You just ${isEnabledTop ? 'activated' : 'deactivated'} page topology view!`
     });
@@ -110,7 +103,7 @@ chrome.commands.onCommand.addListener(function (command) {
   }
 });
 
-const setTopology = (enabled) => {
+const setTopology = enabled => {
   chrome.storage.sync.set({ "showTopology": enabled }, function () {
     chrome.tabs.getSelected(null, function (tab) {
       if (tab && tab.id > -1) {
@@ -122,7 +115,7 @@ const setTopology = (enabled) => {
   });
 }
 
-const setEnabled = (enabled) => {
+const setEnabled = enabled => {
   chrome.storage.sync.set({ "registerChange": enabled }, function () {
     if (enabled) {
       chrome.webRequest.onBeforeRequest.addListener(callback, {

@@ -28,8 +28,8 @@ module.exports = {
   devtool: MODE === 'production' ? false : "inline-source-map",
   entry: {
     "content-script":
-      "./plugin-src/my-content-script.js",
-    background: "./plugin-src/my-background.js",
+      "./plugin-src/content-script.js",
+    background: "./plugin-src/background.js",
     // This is just the popup script, it shouldn't trigger the plugin reload when is changed
     popup: "./plugin-src/popup.js"
   },
