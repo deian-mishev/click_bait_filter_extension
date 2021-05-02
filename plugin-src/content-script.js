@@ -4,7 +4,8 @@ const { getUrl } = require('../../click_bait_filter_be/api/url_get');
 let valueLow;
 let valueHigh;
 let linksToFilter;
-let runtimeLinks = [];
+let runtimeLinks = {};
+let tempspace = [];
 let eHide = [];
 let eShow = [];
 const groups = {}
