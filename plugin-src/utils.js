@@ -1,5 +1,19 @@
 const convertLetterToNumber = (str) => str.toLowerCase().charCodeAt(0) - 96;
 
+export const getUrl = url => {
+  let res = false;
+  if (isPresent(url, '.html')) {
+    url = url.split(".html")[0];
+    const found = url.
+      match(/(([^\/|=|?|_|-]+)(?=(\.\w+$)|(\.$)|(\/+$)|-|_))+/g);
+    if (found && found.length && found.length > 3) {
+      res = found;
+    }
+    return res;
+  }
+  return res;
+}
+
 export const getGuid = () => {
   var nav = window.navigator;
   var guid = nav.mimeTypes.length;

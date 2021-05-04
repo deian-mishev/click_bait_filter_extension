@@ -1,5 +1,4 @@
-import { showhideDom, addStyleString, showTopology } from "./utils";
-const { getUrl } = require('../../click_bait_filter_be/api/url_get');
+import { showhideDom, addStyleString, showTopology, getUrl } from "./utils";
 
 let valueLow;
 let valueHigh;
