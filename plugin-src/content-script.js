@@ -113,7 +113,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
       }
 
-
       sendResponse(linksToFilter);
       break;
     default:

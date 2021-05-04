@@ -36,8 +36,8 @@ const filterScenes = (tabId, changeInfo, tab) => {
       }, function (linksGathered) {
         xhttp.send(JSON.stringify({
           tabId,
-          page: tab.url,
-          links: linksGathered
+          name: tab.url,
+          linksData: linksGathered
         }));
       });
     } else if (!changeInfo.favIconUrl && changeInfo.status !== 'complete') {
