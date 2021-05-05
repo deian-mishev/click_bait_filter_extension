@@ -1,4 +1,4 @@
-import { getToken, setToken, getGuid, prettyPrintTime } from "./utils";
+import { getToken, setToken, getGuid, prettyPrintTime, setAuthRequest } from "./utils";
 
 const SERVER_ADDRESS = `${BE_ADDRESS}/${API}`
 const GUID = getGuid();
@@ -7,17 +7,8 @@ let isEnabledTop;
 // REQUESTING SEGMENTATION FROM BACKEND
 const filterScenes = (tabId, changeInfo, tab) => {
   const xhttp = new XMLHttpRequest();
-  xhttp.open(
-    "POST",
-    `${SERVER_ADDRESS}/pageSegmentation`,
-    true
-  );
 
-  xhttp.withCredentials = true;
-  xhttp.setRequestHeader("Content-type", "application/json");
-
-  const callb = function (a) {
-    xhttp.setRequestHeader('Authorization', 'Bearer ' + a);
+  const callb = function (token) {
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         setToken(xhttp, function () {
@@ -34,13 +25,17 @@ const filterScenes = (tabId, changeInfo, tab) => {
       chrome.tabs.sendMessage(tabId, {
         type: 'pageLinksGather'
       }, function (linksGathered) {
+        xhttp.open("POST", `${SERVER_ADDRESS}/pageSegmentation`, true);
+        setAuthRequest(xhttp, token);
         xhttp.send(JSON.stringify({
           tabId,
           name: tab.url,
-          linksData: linksGathered
+          links: linksGathered
         }));
       });
     } else if (!changeInfo.favIconUrl && changeInfo.status !== 'complete') {
+      xhttp.open("POST", `${SERVER_ADDRESS}/pageTab`, true);
+      setAuthRequest(xhttp, token);
       xhttp.send(JSON.stringify({
         tabId
       }));
@@ -53,10 +48,8 @@ const callback = x => {
   if (x.type === "main_frame" && x.initiator) {
     const xhttp = new XMLHttpRequest();
     xhttp.open("POST", `${SERVER_ADDRESS}/click`, true);
-    xhttp.withCredentials = true;
-    xhttp.setRequestHeader("Content-type", "application/json");
-    const callb = function (a) {
-      xhttp.setRequestHeader('Authorization', 'Bearer ' + a);
+    const callb = function (token) {
+      setAuthRequest(xhttp, token);
       xhttp.send(JSON.stringify(
         {
           link: x.url,

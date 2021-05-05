@@ -23,16 +23,16 @@ chrome.storage.sync.get(["myRangeValueLow", "myRangeValueHigh"], function (resul
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.type) {
     case 'pageLinksGather':
-      runtimeLinks = {};
+      runtimeLinks = [];
       tempspace = [];
       const pageNodes = document.querySelectorAll('a');
       for (let index = 0; index < pageNodes.length; index++) {
         const currentNode = pageNodes[index].href;
-        const url = getUrl(currentNode);
-        if (url) {
-          const joined_url = url.join('');
+        const urlData = getUrl(currentNode);
+        if (urlData) {
+          const joined_url = urlData.join('');
           if (!tempspace.includes(joined_url)) {
-            runtimeLinks[currentNode] = url;
+            runtimeLinks.push({ name: currentNode });
             tempspace.push(joined_url);
           }
         }
@@ -66,7 +66,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       // Store links to filter for page
       // and filter according to range change
       linksToFilter = request.links;
-      if (linksToFilter) {
+      if (linksToFilter && !!linksToFilter.length) {
+        const keys = [];
+        const temp = {};
+        for (const link of linksToFilter) {
+          keys.push(link.name);
+          temp[link.name] = link.score;
+        }
+        linksToFilter = temp;
 
         const urlNodes = document.querySelectorAll('a');
         // More like show potentially
@@ -81,22 +88,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           }
         }
 
-        const keys = Object.keys(linksToFilter);
-        keys.sort(function (a, b) { return linksToFilter[a] > linksToFilter[b] ? 1 : -1 });
-
         for (let i = 0; i < keys.length; i++) {
           const element = keys[i];
           if (!groups[linksToFilter[element]]) groups[linksToFilter[element]] = [];
           groups[linksToFilter[element]].push(element)
         }
 
-        const groupInd = Object.keys(groups)
-        const step = 100 / groupInd.length;
+        const groupInd = Object.keys(groups).sort((a, b) => a - b);
+        const step = 50 / groupInd.length;
 
         for (let i = 0; i < groupInd.length; i++) {
           const group = groups[groupInd[i]];
-          const low = 100 - (step * i);
-          const high = 100 - (step * (i + 1));
+          const low = 50 - (step * i);
+          const high = 50 - (step * (i + 1));
           group['clickbait_locator'] = {
             lowerRange: low,
             upperRange: high,

@@ -1,5 +1,13 @@
 const convertLetterToNumber = (str) => str.toLowerCase().charCodeAt(0) - 96;
 
+const isPresent = (url, val) => url.indexOf(val) !== -1;
+
+export const setAuthRequest = (xhttp, token) => {
+  xhttp.withCredentials = true;
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+}
+
 export const getUrl = url => {
   let res = false;
   if (isPresent(url, '.html')) {
@@ -180,7 +188,6 @@ export const showhideDom = (valueLow, valueHigh, eHide, eShow, groups, linksToFi
     const meta = group['clickbait_locator'];
 
     if (valueLow > meta.upperRange) {
-
       const diff = Math.abs(meta.upperRange - valueLow) / 90;
       let roundedDecimal = parseFloat(diff.toFixed(1));
       roundedDecimal = roundedDecimal !== 0.0 ? roundedDecimal : 0.1;
