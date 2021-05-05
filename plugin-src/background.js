@@ -25,7 +25,7 @@ const filterScenes = (tabId, changeInfo, tab) => {
       chrome.tabs.sendMessage(tabId, {
         type: 'pageLinksGather'
       }, function (linksGathered) {
-        xhttp.open("POST", `${SERVER_ADDRESS}/pageSegmentation`, true);
+        xhttp.open("POST", `${SERVER_ADDRESS}/${SEGMENTATION}`, true);
         setAuthRequest(xhttp, token);
         xhttp.send(JSON.stringify({
           tabId,
@@ -34,7 +34,7 @@ const filterScenes = (tabId, changeInfo, tab) => {
         }));
       });
     } else if (!changeInfo.favIconUrl && changeInfo.status !== 'complete') {
-      xhttp.open("POST", `${SERVER_ADDRESS}/pageTab`, true);
+      xhttp.open("POST", `${SERVER_ADDRESS}/${TABS}`, true);
       setAuthRequest(xhttp, token);
       xhttp.send(JSON.stringify({
         tabId
@@ -47,7 +47,7 @@ const filterScenes = (tabId, changeInfo, tab) => {
 const callback = x => {
   if (x.type === "main_frame" && x.initiator) {
     const xhttp = new XMLHttpRequest();
-    xhttp.open("POST", `${SERVER_ADDRESS}/click`, true);
+    xhttp.open("POST", `${SERVER_ADDRESS}/${CLICK}`, true);
     const callb = function (token) {
       setAuthRequest(xhttp, token);
       xhttp.send(JSON.stringify(

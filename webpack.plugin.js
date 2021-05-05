@@ -7,15 +7,21 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebpackChromeReloaderPlugin = require("./webpack-chrome-extension-reloader");
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
+const API = process.env.API;
+const TABS = process.env.TABS;
+const CLICK = process.env.CLICK;
 const MODE = process.env.NODE_ENV;
 const BE_ADDRESS = process.env.BE_ADDRESS;
-const API = process.env.API;
+const SEGMENTATION = process.env.SEGMENTATION;
 
-if (!MODE || !BE_ADDRESS || !API) {
+if (!MODE || !BE_ADDRESS || !API || !SEGMENTATION || !TABS || !CLICK) {
   console.log('-------------');
   console.log('MODE: ' + MODE);
   console.log('API: ' + API);
   console.log('BE_ADDRESS: ' + BE_ADDRESS);
+  console.log('SEGMENTATION: ' + SEGMENTATION);
+  console.log('TABS: ' + TABS);
+  console.log('CLICK: ' + CLICK);
   console.log('-------------');
   throw Error('Bad Config')
 }
@@ -44,8 +50,11 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
+      API: JSON.stringify(API),
+      TABS: JSON.stringify(TABS),
+      CLICK: JSON.stringify(CLICK),
       BE_ADDRESS: JSON.stringify(BE_ADDRESS),
-      API: JSON.stringify(API)
+      SEGMENTATION: JSON.stringify(SEGMENTATION)
     }),
     new WebpackChromeReloaderPlugin(),
     new MiniCssExtractPlugin({ filename: "style.css" }),
