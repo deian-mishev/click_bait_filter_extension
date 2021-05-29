@@ -13,13 +13,28 @@ export const getUrl = url => {
   if (isPresent(url, '.html')) {
     url = url.split(".html")[0];
     const found = url.
-      match(/(([^\/|=|?|_|-]+)(?=(\.\w+$)|(\.$)|(\/+$)|-|_))+/g);
-    if (found && found.length && found.length > 3) {
-      res = found;
+      match(/([^\/|\.|\?]+)(?=\.|\?|\/+$|$)/g);
+    if (found && found.length && found.length >= 2) {
+      res = findSplit(['-', '_'], found[1]);
     }
+
     return res;
   }
   return res;
+}
+
+const findSplit = (splits, url) => {
+  const letters = /^[a-z]+$/
+  for (let index = 0; index < splits.length; index++) {
+    const split = splits[index];
+    let el = url.split(split)
+      .filter(Boolean)
+      .filter(a => a.match(letters))
+    if (el.length > 3) {
+      return el;
+    }
+  }
+  return false;
 }
 
 export const getGuid = () => {
